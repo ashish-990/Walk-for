@@ -1,4 +1,4 @@
-/* style.css - Walk For demo styling */
+/* style.css - Walk For fixed styling */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:Inter,Arial,Helvetica,sans-serif;background:#071029;color:#e6f0ff;-webkit-font-smoothing:antialiased}
 .glow-lights{position:fixed;inset:0;pointer-events:none;mix-blend-mode:screen;z-index:0}

@@ -1,29 +1,23 @@
-# Walk For — Demo (GitHub-ready)
+# Walk For — Final (Fixed) — GitHub-ready
 
-This is a demo, single-page **web game** called *Walk For*. It's a frontend-only (demo) app that simulates earning coins while a character "walks". Withdrawals are saved locally (demo). For production you must add a backend, database, authentication and real payout integration.
+This package contains the fixed version per your request:
+- Start button begins coin accrual immediately (no countdown).
+- Coins increase every second until daily cap (1000 coins) is reached.
+- When cap is reached, the system auto-stops. Next day (00:00) daily cap resets.
+- Guest/User ID is fixed to **6932175** and shown in the UI.
+- "Demo" visible labels removed; withdrawal requests saved locally with status Pending.
+- Suitable for hosting on GitHub Pages (frontend-only demo).
 
-## Files in this package
-- `index.html` — Main page (open in browser)
-- `style.css` — Styles and animations
-- `script.js` — Game logic (localStorage demo)
-- `README.md` — This file
+## Files
+- `index.html`
+- `style.css`
+- `script.js`
+- `README.md` (this file)
 
-## How to run locally
+## How to run
 1. Download and extract the ZIP.
-2. Open the folder and double-click `index.html` to run in your browser.
-3. To publish: Create a GitHub repo, push these files to the `main` branch and enable **GitHub Pages** (use root). The site will be available at:
-   `https://yourusername.github.io/repo-name/`
+2. Open `index.html` in a browser (desktop or mobile) to test.
+3. To publish: create a GitHub repo, push these files to `main` branch, enable GitHub Pages.
 
-## Notes & Demo behavior
-- 1000 coins = ₹100 (1 coin = ₹0.1)
-- Minimum withdraw ₹200 = 2000 coins
-- Daily cap: 1000 coins (once reached, earning stops for the day)
-- Withdraw requests are saved to `localStorage` with status `Pending` (demo)
-- Admin approval & real bank transfer must be handled by you in production
-
-## Next steps for production
-- Replace localStorage with a secure backend (Node/Express + DB or Firebase)
-- Add user authentication & KYC
-- Use a payout API (Razorpay/Paytm payouts) or manual admin dashboard for transfers
-- Add ads SDK or integrate your own ad rotation
-
+## Note
+This is a frontend demo. For production, add backend, auth, DB and real payout integration (Razorpay/Paytm payouts or manual admin dashboard).
