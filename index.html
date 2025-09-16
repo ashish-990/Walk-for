@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Walk For — Demo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="glow-lights"></div>
+  <div class="app">
+    <div class="top">
+      <div class="game-area">
+        <div class="header-row">
+          <div class="title-block">
+            <div class="title">Walk For</div>
+            <div class="subtitle">— Walk, earn coins, withdraw by bank</div>
+          </div>
+          <div class="right-block">
+            <div class="muted">Daily cap: 1000 coins</div>
+            <div class="badge">$1</div>
+          </div>
+        </div>
+
+        <div class="flower-wrap" aria-hidden="true">
+          <div class="flower">
+            <div class="petal p1" style="--rot:0deg"></div>
+            <div class="petal p2" style="--rot:60deg"></div>
+            <div class="petal p3" style="--rot:120deg"></div>
+            <div class="petal p4" style="--rot:180deg"></div>
+            <div class="petal p5" style="--rot:240deg"></div>
+            <div class="petal p6" style="--rot:300deg"></div>
+            <div class="center-dot"></div>
+          </div>
+        </div>
+
+        <div class="scene" id="scene">
+          <div class="sky"></div>
+          <div class="character center" id="character" aria-hidden="true">
+            <div class="char-head"></div>
+            <div class="char-body">
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+              <div class="leg left"></div>
+              <div class="leg right"></div>
+              <div class="char-shadow"></div>
+            </div>
+          </div>
+          <div class="ground"></div>
+        </div>
+
+        <div class="controls-row">
+          <button class="btn" id="startBtn">Start</button>
+          <button class="btn secondary" id="stopBtn" style="display:none">Stop</button>
+          <div class="muted" id="status">Idle</div>
+          <div class="muted ad-timer">Next ad in <span id="adTimer">-</span></div>
+        </div>
+
+        <div class="wallet-row">
+          <div class="card wallet-card">
+            <div class="muted">Wallet</div>
+            <div class="big" id="coinsDisplay">0 coins</div>
+            <div class="muted">Equivalent: ₹<span id="rupeeDisplay">0</span></div>
+          </div>
+
+          <div class="card daily-card">
+            <div class="muted">Daily Earned</div>
+            <div class="big" id="dailyEarned">0</div>
+            <div class="muted">/ 1000</div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="side">
+        <div class="card">
+          <div class="muted">Account</div>
+          <div class="account-row">
+            <div class="avatar">W</div>
+            <div>
+              <div class="big" id="userName">Guest</div>
+              <div class="muted" id="userId">ID: guest_local</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="muted">Withdrawal (Bank Transfer Only)</div>
+          <div class="form">
+            <label>Account Holder Name</label>
+            <input id="accName" placeholder="Full name" />
+            <label>Bank Name</label>
+            <input id="bankName" placeholder="e.g. State Bank of India" />
+            <label>Account Number</label>
+            <input id="accNumber" placeholder="123456789012" />
+            <label>IFSC Code</label>
+            <input id="ifsc" placeholder="e.g. SBIN0000001" />
+            <label>Withdraw Amount (₹) — Min ₹200</label>
+            <input id="withdrawAmount" placeholder="200" type="number" />
+            <div class="actions"><button class="btn" id="withdrawBtn">Request Withdraw</button></div>
+            <div class="muted note">Requests are saved locally (demo). For production connect to a backend.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="muted">How it works</div>
+          <ol class="howlist">
+            <li>Earn coins while character is walking.</li>
+            <li>1000 coins = ₹100 (1 coin = ₹0.1)</li>
+            <li>Min withdraw ₹200 = 2000 coins.</li>
+            <li>Daily cap: 1000 coins (automatically enforced).</li>
+          </ol>
+        </div>
+
+        <div class="card" id="activityCard">
+          <div class="muted">Activity Log</div>
+          <div class="activity-box">
+            <ul id="activityList"></ul>
+          </div>
+        </div>
+
+        <footer>Made for GitHub demo — open this file in browser to run.</footer>
+      </aside>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
