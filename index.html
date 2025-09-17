@@ -28,6 +28,7 @@
     <p>Status: <span id="status">Idle</span></p>
     <p>Wallet: <span id="coins">0</span> coins (₹<span id="rupee">0</span>)</p>
     <p>Daily Earned: <span id="earned">0</span> / 1000</p>
+    <button id="claimBtn">Claim</button>
   </div>
 
   <div class="card">
@@ -89,8 +90,7 @@ document.getElementById('startBtn').onclick=()=>{
   document.getElementById('status').innerText='Walking';
   log('Started walking');
   timer=setInterval(()=>{
-    state.coins+=1;
-    state.daily+=1;
+    state.daily+=1; // pehle sirf daily me add hoga
     updateUI();
     if(state.daily>=DAILY_CAP){
       clearInterval(timer);
@@ -100,6 +100,22 @@ document.getElementById('startBtn').onclick=()=>{
     }
     checkMidnight();
   },1000);
+};
+
+// Claim button logic
+document.getElementById('claimBtn').onclick=()=>{
+  let available=Math.floor(state.daily);
+  if(available<=0){
+    alert('No coins available to claim');
+    return;
+  }
+  if(available>DAILY_CAP){
+    available=DAILY_CAP;
+  }
+  state.coins+=available;
+  state.daily=0; // reset daily after claim
+  updateUI();
+  log('Claimed '+available+' coins into wallet');
 };
 
 document.getElementById('withdrawBtn').onclick=()=>{
@@ -118,6 +134,7 @@ document.getElementById('withdrawBtn').onclick=()=>{
   log('Withdraw requested ₹'+amt+' ('+Math.floor(need)+' coins). Pending...');
   alert('Withdraw request pending (for demo).');
 };
+
 updateUI();
 </script>
 </body>
