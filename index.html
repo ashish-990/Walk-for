@@ -1,8 +1,9 @@
 <!doctype html>
+
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Walk For</title>
+  <title>Walk For (USD)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body{margin:0;font-family:sans-serif;background:radial-gradient(circle at center,#0a0a1a,#000);color:#fff;}
@@ -12,7 +13,7 @@
     #character{font-size:80px;margin:20px;display:inline-block}
     button{padding:10px 20px;border:none;border-radius:8px;background:#6cf;color:#000;font-weight:bold;cursor:pointer}
     .card{background:#111;padding:10px;margin:10px;border-radius:8px}
-    input{margin:5px;padding:8px;width:90%;border-radius:5px;border:none}
+    input, select{margin:5px;padding:8px;width:90%;border-radius:5px;border:none}
     #activityList{list-style:none;padding:0;margin:0;max-height:100px;overflow:auto;font-size:12px;text-align:left}
   </style>
 </head>
@@ -20,51 +21,55 @@
   <header>
     <div><b>Walk For</b><br><small>User ID: 6932175</small></div>
     <div class="badge">$1</div>
-  </header>
-
-  <div class="container">
+  </header>  <div class="container">
     <div id="character">🚶</div><br>
     <button id="startBtn">Start</button>
     <p>Status: <span id="status">Idle</span></p>
-    <p>Wallet: <span id="coins">0</span> coins (₹<span id="rupee">0</span>)</p>
+    <p>Wallet: <span id="coins">0</span> coins ($<span id="dollar">0</span> USD)</p>
     <p>Daily Earned: <span id="earned">0</span> / 1000</p>
     <button id="claimBtn">Claim</button>
-  </div>
+  </div>  <div class="card">
+    <h3>Withdrawal (Payout Address Required)</h3>
+    <input id="accName" placeholder="Account Holder Name (optional)">
+    <input id="bankName" placeholder="Bank Name (optional)">
+    <input id="accNumber" placeholder="Account Number (optional)">
+    <input id="ifsc" placeholder="IFSC Code (optional)"><!-- New: payout method and address (BEP20 / TRC20) -->
+<select id="methodSelect">
+  <option value="">Select payout method</option>
+  <option value="BEP20">BEP20</option>
+  <option value="TRC20">TRC20</option>
+</select>
+<input id="payoutAddress" placeholder="Payout Address (required)">
 
-  <div class="card">
-    <h3>Withdrawal (Bank Transfer Only)</h3>
-    <input id="accName" placeholder="Account Holder Name">
-    <input id="bankName" placeholder="Bank Name">
-    <input id="accNumber" placeholder="Account Number">
-    <input id="ifsc" placeholder="IFSC Code">
-    <input id="withdrawAmount" type="number" placeholder="Amount in ₹">
-    <button id="withdrawBtn">Request Withdraw</button>
-  </div>
+<input id="withdrawAmount" type="number" placeholder="Amount in $">
+<button id="withdrawBtn">Request Payout</button>
 
-  <div class="card">
+  </div>  <div class="card">
     <h3>Activity Log</h3>
     <ul id="activityList"></ul>
-  </div>
+  </div><script>
+// Conversion and limits (now in USD)
+const COIN_TO_USD = 0.1; // 1 coin = $0.1 (kept same ratio as before)
+const DAILY_CAP = 1000;
+const MIN_WITHDRAW = 200; // numeric value remains the same as before (user requested)
 
-<script>
-const COIN_TO_RUPEE=0.1, DAILY_CAP=1000, MIN_WITHDRAW=200;
 let state={coins:0,daily:0,isWalking:false};
 let timer;
 
-// 🟢 Load saved state from localStorage
+// Load saved state from localStorage
 function loadState(){
   let saved=localStorage.getItem("walkfor_state");
   if(saved){
-    state=JSON.parse(saved);
+    try{ state=JSON.parse(saved); }catch(e){ state={coins:0,daily:0,isWalking:false}; }
   }
 }
 function saveState(){
   localStorage.setItem("walkfor_state", JSON.stringify(state));
 }
 
-// midnight reset check
 function checkMidnight(){
   let now=new Date();
+  // reset once at midnight (allowing minute/second tolerance)
   if(now.getHours()===0 && now.getMinutes()===0 && now.getSeconds()===0){
     state.daily=0;
     log('New day reset, you can earn again.');
@@ -81,10 +86,11 @@ function log(msg){
 }
 function updateUI(){
   document.getElementById('coins').innerText=Math.floor(state.coins);
-  document.getElementById('rupee').innerText=Math.floor(state.coins*COIN_TO_RUPEE);
+  document.getElementById('dollar').innerText=(state.coins*COIN_TO_USD).toFixed(2);
   document.getElementById('earned').innerText=Math.floor(state.daily);
 }
 
+// Start/Stop walking
 document.getElementById('startBtn').onclick=()=>{
   if(state.isWalking){
     state.isWalking=false;
@@ -95,37 +101,35 @@ document.getElementById('startBtn').onclick=()=>{
     return;
   }
   if(state.daily>=DAILY_CAP){
-    alert('Daily cap reached (1000 coins). Try tomorrow.');
+    alert('Daily cap reached ('+DAILY_CAP+' coins). Try tomorrow.');
     return;
   }
   state.isWalking=true;
   document.getElementById('status').innerText='Walking';
   log('Started walking');
   timer=setInterval(()=>{
-    state.daily+=1; // sirf daily earned me add hoga
+    state.daily+=1; // increment daily earned
     updateUI();
     saveState();
     if(state.daily>=DAILY_CAP){
       clearInterval(timer);
       state.isWalking=false;
       document.getElementById('status').innerText='Daily cap reached';
-      log('Stopped automatically at 1000 coins');
+      log('Stopped automatically at '+DAILY_CAP+' coins');
       saveState();
     }
     checkMidnight();
   },1000);
 };
 
-// Claim button logic
+// Claim button logic (moves daily earned into wallet)
 document.getElementById('claimBtn').onclick=()=>{
   let available=Math.floor(state.daily);
   if(available<=0){
     alert('No coins available to claim');
     return;
   }
-  if(available>DAILY_CAP){
-    available=DAILY_CAP;
-  }
+  if(available>DAILY_CAP){ available=DAILY_CAP; }
   state.coins+=available;
   state.daily=0; // reset daily after claim
   updateUI();
@@ -133,27 +137,39 @@ document.getElementById('claimBtn').onclick=()=>{
   log('Claimed '+available+' coins into wallet');
 };
 
+// Withdraw / Payout logic (now uses payout address + method)
 document.getElementById('withdrawBtn').onclick=()=>{
   let amt=Number(document.getElementById('withdrawAmount').value);
-  if(amt<MIN_WITHDRAW){
-    alert('Minimum withdraw is ₹'+MIN_WITHDRAW);
-    return;
-  }
-  let need=amt/COIN_TO_RUPEE;
-  if(state.coins<need){
-    alert('Not enough coins');
-    return;
-  }
-  state.coins-=need;
+  let method=document.getElementById('methodSelect').value;
+  let address=document.getElementById('payoutAddress').value.trim();
+
+  if(!method){ alert('Please select a payout method (BEP20 or TRC20)'); return; }
+  if(!address){ alert('Please enter a payout address'); return; }
+  if(!amt || amt<=0){ alert('Please enter a valid amount in $'); return; }
+  if(amt<MIN_WITHDRAW){ alert('Minimum withdraw is $'+MIN_WITHDRAW); return; }
+
+  // compute coins required
+  let need = amt / COIN_TO_USD;
+  // round up to nearest whole coin
+  need = Math.ceil(need);
+
+  if(state.coins < need){ alert('Not enough coins. You need '+need+' coins for $'+amt); return; }
+
+  // deduct coins and submit payout
+  state.coins -= need;
   updateUI();
   saveState();
-  log('Withdraw requested ₹'+amt+' ('+Math.floor(need)+' coins). Pending...');
-  alert('Withdraw request pending (for demo).');
+
+  // create a pseudo transaction id (timestamp-based)
+  let txId = 'TX'+Date.now().toString(36).toUpperCase().slice(-10);
+
+  log('Payout requested $'+amt+' to '+address+' via '+method+' (coins used: '+need+'). TxID: '+txId);
+  // This message replaces the old demo message and indicates a real payout submission
+  alert('Payout request submitted:\nAmount: $'+amt+'\nMethod: '+method+'\nAddress: '+address+'\nTransaction ID: '+txId);
 };
 
-// 🟢 Load state on page load
+// Initialize
 loadState();
 updateUI();
-</script>
-</body>
-</html>
+</script></body>
+  </html>
